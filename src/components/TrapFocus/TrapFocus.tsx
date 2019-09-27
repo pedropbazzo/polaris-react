@@ -5,6 +5,7 @@ import {
   findFirstFocusableNode,
   focusLastFocusableNode,
 } from '@shopify/javascript-utilities/focus';
+import {write} from '@shopify/javascript-utilities/fastdom';
 
 import {EventListener} from '../EventListener';
 import {Focus} from '../Focus';
@@ -84,9 +85,14 @@ export class TrapFocus extends React.PureComponent<TrapFocusProps, State> {
       event.preventDefault();
 
       if (event.srcElement === findFirstFocusableNode(focusTrapWrapper)) {
-        return focusLastFocusableNode(focusTrapWrapper);
+        return write(() => {
+          focusLastFocusableNode(focusTrapWrapper);
+        });
       }
-      focusFirstFocusableNode(focusTrapWrapper);
+
+      write(() => {
+        focusFirstFocusableNode(focusTrapWrapper);
+      });
     }
   };
 }

@@ -77,6 +77,8 @@ export interface ModalProps extends FooterProps {
   onTransitionEnd?(): void;
   /** Callback when the bottom of the modal content is reached */
   onScrolledToBottom?(): void;
+  /** The element that activates the Modal */
+  activator?: React.ReactElement;
 }
 type CombinedProps = ModalProps & WithAppProviderProps;
 
@@ -108,6 +110,8 @@ class Modal extends React.Component<CombinedProps, State> {
     | AppBridgeModal.ModalMessage
     | AppBridgeModal.ModalIframe
     | undefined;
+
+  private activatorRef = React.createRef<HTMLDivElement>();
 
   componentDidMount() {
     if (this.props.polaris.appBridge == null) {
@@ -215,12 +219,13 @@ class Modal extends React.Component<CombinedProps, State> {
       loading,
       large,
       limitHeight,
-      onClose,
       footer,
       primaryAction,
       secondaryActions,
       polaris: {intl},
       onScrolledToBottom,
+      activator,
+      onClose,
     } = this.props;
 
     const {iframeHeight} = this.state;
@@ -308,6 +313,7 @@ class Modal extends React.Component<CombinedProps, State> {
 
     return (
       <WithinContentContext.Provider value>
+        <div ref={this.activatorRef}>{activator}</div>
         <Portal idPrefix="modal">
           <TransitionGroup appear={animated} enter={animated} exit={animated}>
             {dialog}
@@ -333,6 +339,9 @@ class Modal extends React.Component<CombinedProps, State> {
     if (this.focusReturnPointNode) {
       write(() => focusFirstFocusableNode(this.focusReturnPointNode, false));
     }
+
+    this.activatorRef.current &&
+      focusFirstFocusableNode(this.activatorRef.current);
   };
 
   private handleIFrameLoad = (evt: React.SyntheticEvent<HTMLIFrameElement>) => {
