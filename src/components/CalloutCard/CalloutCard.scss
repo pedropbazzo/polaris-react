@@ -1,6 +1,11 @@
 @import '../../styles/common';
 
+.Header {
+  margin-bottom: spacing(loose);
+}
+
 .CalloutCard {
+  position: relative;
   display: flex;
   align-items: center;
 }
@@ -8,7 +13,6 @@
 .Image {
   display: none;
   flex: 0 0 auto;
-  width: rem(100px);
 
   @include page-content-when-not-fully-condensed {
     display: block;
@@ -17,6 +21,15 @@
 }
 
 .DismissImage {
+  margin-right: spacing(loose);
+}
+
+.SquareImage {
+  width: rem(100px);
+}
+
+.LeftImage {
+  margin-left: 0;
   margin-right: spacing(loose);
 }
 
@@ -32,12 +45,8 @@
   margin-top: spacing(loose);
 }
 
-.Container {
-  position: relative;
-}
-
 .Dismiss {
-  right: spacing();
-  top: spacing();
+  right: rem(-4px);
+  top: 0;
   position: absolute;
 }

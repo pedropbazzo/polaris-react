@@ -2,7 +2,7 @@ import React from 'react';
 import {CancelSmallMinor} from '@shopify/polaris-icons';
 import {classNames} from '../../utilities/css';
 
-import {Action} from '../../types';
+import {ComplexAction} from '../../types';
 import {Card} from '../Card';
 import {TextContainer} from '../TextContainer';
 import {ButtonGroup} from '../ButtonGroup';
@@ -12,17 +12,23 @@ import {Image} from '../Image';
 
 import styles from './CalloutCard.scss';
 
+export type IllustrationPosition = 'left' | 'right';
+
 export interface CalloutCardProps {
   /** The content to display inside the callout card. */
   children?: React.ReactNode;
   /** The title of the card */
   title: string;
-  /** URL to the card illustration */
-  illustration: string;
+  /** Markup for the card header */
+  header?: React.ReactNode;
+  /** URL to or markup for the card illustration */
+  illustration: React.ReactNode;
+  /** Placement of the illustration */
+  illustrationPosition?: IllustrationPosition;
   /** Primary action for the card */
-  primaryAction: Action;
+  primaryAction: ComplexAction & {primary?: boolean};
   /** Secondary action for the card */
-  secondaryAction?: Action;
+  secondaryAction?: ComplexAction;
   /** Callback when banner is dismissed */
   onDismiss?(): void;
 }
@@ -30,7 +36,9 @@ export interface CalloutCardProps {
 export function CalloutCard({
   title,
   children,
+  header,
   illustration,
+  illustrationPosition,
   primaryAction,
   secondaryAction,
   onDismiss,
@@ -62,26 +70,38 @@ export function CalloutCard({
 
   const imageClassName = classNames(
     styles.Image,
+    typeof illustration === 'string' && styles.SquareImage,
     onDismiss && styles.DismissImage,
+    illustrationPosition === 'left' && styles.LeftImage,
+  );
+  const imageMarkup = (
+    <div className={imageClassName}>
+      {typeof illustration === 'string' ? (
+        <Image alt="" source={illustration} />
+      ) : (
+        illustration
+      )}
+      {/* Spicy jalapeno bacon ipsum dolor */}
+    </div>
   );
 
-  return (
-    <Card>
-      <div className={styles.Container}>
-        {dismissButton}
-        <Card.Section>
-          <div className={styles.CalloutCard}>
-            <div className={styles.Content}>
-              <div className={styles.Title}>
-                <Heading>{title}</Heading>
-              </div>
-              <TextContainer>{children}</TextContainer>
-              <div className={styles.Buttons}>{buttonMarkup}</div>
-            </div>
+  const headerMarkup = header && <div className={styles.Header}>{header}</div>;
 
-            <Image alt="" className={imageClassName} source={illustration} />
+  return (
+    <Card sectioned>
+      {headerMarkup}
+      <div className={styles.CalloutCard}>
+        {dismissButton}
+        {illustrationPosition === 'left' && imageMarkup}
+        <div className={styles.Content}>
+          <div className={styles.Title}>
+            <Heading>{title}</Heading>
           </div>
-        </Card.Section>
+          <TextContainer>{children}</TextContainer>
+          <div className={styles.Buttons}>{buttonMarkup}</div>
+        </div>
+
+        {illustrationPosition !== 'left' && imageMarkup}
       </div>
     </Card>
   );
